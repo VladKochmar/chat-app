@@ -18,17 +18,19 @@ export const Route = createRootRouteWithContext<ChatAppRouterContext>()({
       <main className="flex min-h-screen items-center justify-center">
         <Outlet />
       </main>
-      <TanstackDevtools
-        config={{
-          position: 'bottom-left',
-        }}
-        plugins={[
-          {
-            name: 'Tanstack Router',
-            render: <TanStackRouterDevtoolsPanel />,
-          },
-        ]}
-      />
+      {import.meta.env.VITE_ENVIRONMENT === 'development' && (
+        <TanstackDevtools
+          config={{
+            position: 'bottom-left',
+          }}
+          plugins={[
+            {
+              name: 'Tanstack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
+      )}
     </>
   ),
 })
