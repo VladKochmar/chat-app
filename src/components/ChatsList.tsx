@@ -7,7 +7,11 @@ import type { UserChats } from '@/types/UserChats'
 import { useAuth } from '@/hooks/useAuth'
 import { ChatContext } from '@/contexts/ChatContext'
 
-export default function ChatsList() {
+interface ChatsListProps {
+  onSelectChat: () => void
+}
+
+export default function ChatsList({ onSelectChat }: ChatsListProps) {
   const { user } = useAuth()
   const { dispatch } = useContext(ChatContext)
   const [chats, setChats] = useState<UserChats>({})
@@ -28,6 +32,7 @@ export default function ChatsList() {
 
   const handleClick = (selectedUser: Omit<User, 'email'>) => {
     dispatch({ type: 'SELECT_USER', payload: selectedUser })
+    onSelectChat()
   }
 
   return (
