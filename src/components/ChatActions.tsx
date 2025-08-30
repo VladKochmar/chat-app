@@ -1,34 +1,53 @@
-import { SendHorizontal } from 'lucide-react'
-import { useContext, useState } from 'react'
-import { v4 as uuid } from 'uuid'
+import { Pencil, SendHorizontal, X } from 'lucide-react'
+import { useContext } from 'react'
 import {
   Timestamp,
-  arrayUnion,
+  addDoc,
+  collection,
   doc,
   serverTimestamp,
   updateDoc,
 } from 'firebase/firestore'
 import { db } from '../../firebase'
+import type { KeyboardEvent } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { ChatContext } from '@/contexts/ChatContext'
+import { useChatActions } from '@/contexts/ChatActionsContext'
+import { truncate } from '@/utils/truncate'
 
 export default function ChatActions() {
-  const [text, setText] = useState('')
-
   const { user } = useAuth()
   const { data } = useContext(ChatContext)
+  const { text, setText, messageId, setMessageId, originalMessage } =
+    useChatActions()
 
   const isDisabled = !text
+  const isEdit = !!messageId
+
+  const handleEdit = async () => {
+    if (data.chatId && text && isEdit) {
+      const chatRef = doc(db, 'chats', data.chatId)
+      const messageRef = doc(chatRef, 'messages', messageId)
+
+      await updateDoc(messageRef, {
+        text,
+      })
+
+      setMessageId('')
+      setText('')
+      originalMessage.current = ''
+    }
+  }
 
   const handleSend = async () => {
     if (data.chatId && data.user && user && text) {
-      await updateDoc(doc(db, 'chats', data.chatId), {
-        messages: arrayUnion({
-          id: uuid(),
-          text,
-          sender: user.uid,
-          date: Timestamp.now(),
-        }),
+      const chatRef = doc(db, 'chats', data.chatId)
+      const messagesRef = collection(chatRef, 'messages')
+
+      await addDoc(messagesRef, {
+        text,
+        sender: user.uid,
+        date: Timestamp.now(),
       })
 
       await updateDoc(doc(db, 'userChats', user.uid), {
@@ -45,37 +64,61 @@ export default function ChatActions() {
     }
   }
 
+  const handleEnter = async (e: KeyboardEvent) => {
+    if (e.code === 'Enter') {
+      isEdit ? await handleEdit() : await handleSend()
+    }
+  }
+
+  const handleClear = () => {
+    originalMessage.current = ''
+    setMessageId('')
+    setText('')
+  }
+
   return (
-    <div className="flex gap-x-4 bg-gray-700 px-3 py-4">
-      <input
-        type="text"
-        placeholder="Message..."
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={(e) => e.code === 'Enter' && handleSend()}
-        className="flex-1 outline-none placeholder:text-gray-400"
-      />
-      {/* <input
-        type="file"
-        id="file-input"
-        onChange={(e) =>
-          e.target.files ? setImage(e.target.files[0]) : setImage(null)
-        }
-        className="hidden"
-      />
-      <label
-        htmlFor="file-input"
-        className="inline-flex size-8 cursor-pointer items-center justify-center rounded-sm bg-indigo-600 transition-colors duration-300 hover:bg-indigo-700"
-      >
-        <Paperclip size={20} />
-      </label> */}
-      <button
-        disabled={isDisabled}
-        onClick={handleSend}
-        className="inline-flex size-8 cursor-pointer items-center justify-center rounded-sm bg-indigo-600 transition-colors duration-300 hover:bg-indigo-700 disabled:bg-indigo-600/30"
-      >
-        <SendHorizontal size={20} />
-      </button>
+    <div className="bg-gray-700 px-3 py-4">
+      {isEdit && (
+        <div className="flex items-center justify-between gap-x-4 border-b border-b-gray-600 not-last:pb-2">
+          <div className="flex gap-x-2">
+            <span className="text-emerald-500">Editing:</span>
+            <p>{truncate(originalMessage.current, 60)}</p>
+          </div>
+          <button
+            onClick={handleClear}
+            className="inline-flex size-8 min-w-8 cursor-pointer items-center justify-center rounded-sm bg-emerald-500/30 transition-colors duration-300 hover:bg-emerald-600/70"
+          >
+            <X size={20} />
+          </button>
+        </div>
+      )}
+      <div className="flex gap-x-4 not-first:pt-2">
+        <input
+          type="text"
+          placeholder="Message..."
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleEnter}
+          className="flex-1 outline-none placeholder:text-gray-400"
+        />
+        {isEdit ? (
+          <button
+            disabled={isDisabled}
+            onClick={handleEdit}
+            className="inline-flex size-8 cursor-pointer items-center justify-center rounded-sm bg-indigo-600 transition-colors duration-300 hover:bg-indigo-700 disabled:bg-indigo-600/30"
+          >
+            <Pencil size={20} />
+          </button>
+        ) : (
+          <button
+            disabled={isDisabled}
+            onClick={handleSend}
+            className="inline-flex size-8 cursor-pointer items-center justify-center rounded-sm bg-indigo-600 transition-colors duration-300 hover:bg-indigo-700 disabled:bg-indigo-600/30"
+          >
+            <SendHorizontal size={20} />
+          </button>
+        )}
+      </div>
     </div>
   )
 }

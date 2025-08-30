@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { doc, onSnapshot } from 'firebase/firestore'
+import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { db } from '../../firebase'
 import Message from './Message'
 import type { MessageType } from '@/types/MessageType'
@@ -11,13 +11,20 @@ export default function Messages() {
 
   useEffect(() => {
     if (data.chatId) {
-      const unsubscribe = onSnapshot(
-        doc(db, 'chats', data.chatId),
-        (document) => {
-          document.exists() &&
-            setMessages(document.data().messages as Array<MessageType>)
-        },
-      )
+      const messagesRef = collection(doc(db, 'chats', data.chatId), 'messages')
+      const q = query(messagesRef, orderBy('date', 'asc'))
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const newMessages: Array<MessageType> = []
+        querySnapshot.forEach((document) => {
+          newMessages.push({
+            id: document.id,
+            ...document.data(),
+          } as MessageType)
+        })
+
+        setMessages(newMessages)
+      })
 
       return () => unsubscribe()
     }
