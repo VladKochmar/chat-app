@@ -44,7 +44,6 @@ export function ChatContextProvider({ children }: { children: ReactNode }) {
         return state
       }
       case 'RESET_USER': {
-        console.log('action.payload', action.payload)
         return {
           user: action.payload,
           chatId: null,

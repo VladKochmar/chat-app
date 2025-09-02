@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
-import type { ReactNode, RefObject } from 'react'
+import type { MouseEvent, ReactNode, RefObject } from 'react'
 import { calcPosition } from '@/utils/calcPosition'
 
 interface ContextMenuContextInterface {
   isOpen: boolean
   position: { x: number; y: number }
   open: (x: number, y: number) => void
-  close: () => void
+  close: (e: MouseEvent) => void
   menuRef: RefObject<HTMLDivElement | null>
 }
 
@@ -47,7 +47,10 @@ export function ContextMenu({ children }: { children: ReactNode }) {
     setIsOpen(true)
   }
 
-  const close = () => setIsOpen(false)
+  const close = (e: MouseEvent) => {
+    e.stopPropagation()
+    setIsOpen(false)
+  }
 
   return (
     <ContextMenuContext.Provider

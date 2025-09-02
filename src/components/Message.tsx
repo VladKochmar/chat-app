@@ -1,4 +1,4 @@
-import { Pencil, Trash } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { useContext, useEffect, useRef } from 'react'
 import { deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../../firebase'
@@ -9,6 +9,7 @@ import type { MessageType } from '@/types/MessageType'
 import { ChatContext } from '@/contexts/ChatContext'
 import { useAuth } from '@/hooks/useAuth'
 import { useChatActions } from '@/contexts/ChatActionsContext'
+import { resetChatInfo } from '@/utils/chatActions'
 
 interface MessageProps {
   message: MessageType
@@ -42,6 +43,8 @@ export default function Message({ message }: MessageProps) {
     if (data.chatId) {
       try {
         await deleteDoc(doc(db, 'chats', data.chatId, 'messages', message.id))
+        if (user && data.user)
+          await resetChatInfo(user.uid, data.user.uid, data.chatId)
       } catch (error) {
         console.error(error)
       }
@@ -70,15 +73,15 @@ export default function Message({ message }: MessageProps) {
               className="flex cursor-pointer items-center justify-between px-2 py-1 transition-colors duration-300 not-last:border-b not-last:border-b-gray-200 hover:bg-gray-800"
             >
               Edit
-              <Pencil />
+              <Pencil size={20} />
             </button>
           )}
           <button
             onClick={handleDeleteMessage}
-            className="flex cursor-pointer items-center justify-between px-2 py-1 transition-colors duration-300 not-last:border-b not-last:border-b-gray-200 hover:bg-gray-800"
+            className="flex cursor-pointer items-center justify-between px-2 py-1 text-red-500 transition-colors duration-300 not-last:border-b not-last:border-b-gray-200 hover:bg-gray-800"
           >
             Delete
-            <Trash />
+            <Trash2 size={20} />
           </button>
         </ContextMenuContent>
       </ContextMenu>

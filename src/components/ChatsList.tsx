@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { doc, onSnapshot } from 'firebase/firestore'
 import { db } from '../../firebase'
-import Contact from './Contact'
+import ChatContact from './ChatContact'
 import type { User } from '@/types/User'
 import type { UserChats } from '@/types/UserChats'
 import { useAuth } from '@/hooks/useAuth'
@@ -21,7 +21,6 @@ export default function ChatsList({ onSelectChat }: ChatsListProps) {
       const unsubscribe = onSnapshot(
         doc(db, 'userChats', user.uid),
         (document) => {
-          console.log('hi')
           setChats(document.data() as UserChats)
         },
       )
@@ -35,17 +34,18 @@ export default function ChatsList({ onSelectChat }: ChatsListProps) {
     onSelectChat()
   }
 
+  if (!user) return null
+
   return (
     <div className="flex-1 overflow-auto">
       {Object.entries(chats)
         .sort((a, b) => b[1].date - a[1].date)
         .map((chat) => (
           <div key={chat[0]} onClick={() => handleClick(chat[1].userInfo)}>
-            <Contact
-              name={chat[1].userInfo.displayName}
-              photoURL={chat[1].userInfo.photoURL}
-              message={chat[1].lastMessage?.text}
-              className="hover:bg-gray-800"
+            <ChatContact
+              currentUserId={user.uid}
+              userInfo={chat[1].userInfo}
+              lastMessage={chat[1].lastMessage?.text}
             />
           </div>
         ))}
