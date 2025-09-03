@@ -54,7 +54,7 @@ export default function Message({ message }: MessageProps) {
   return (
     <div
       ref={messageRef}
-      className={`flex not-last:mb-4 ${isUserSender ? 'justify-end' : 'justify-start'}`}
+      className={`flex whitespace-pre-wrap not-last:mb-4 ${isUserSender ? 'justify-end' : 'justify-start'}`}
     >
       <ContextMenu>
         <ContextMenuTrigger

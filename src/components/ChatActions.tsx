@@ -9,6 +9,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import { db } from '../../firebase'
+import FancyTextarea from './FancyTextarea'
 import type { KeyboardEvent } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { ChatContext } from '@/contexts/ChatContext'
@@ -66,6 +67,9 @@ export default function ChatActions() {
 
   const handleEnter = async (e: KeyboardEvent) => {
     if (e.code === 'Enter') {
+      if (e.shiftKey) return
+
+      e.preventDefault()
       isEdit ? await handleEdit() : await handleSend()
     }
   }
@@ -93,13 +97,10 @@ export default function ChatActions() {
         </div>
       )}
       <div className="flex gap-x-4 not-first:pt-2">
-        <input
-          type="text"
-          placeholder="Message..."
+        <FancyTextarea
           value={text}
-          onChange={(e) => setText(e.target.value)}
           onKeyDown={handleEnter}
-          className="flex-1 outline-none placeholder:text-gray-400"
+          onChange={(e) => setText(e.target.value)}
         />
         {isEdit ? (
           <button
