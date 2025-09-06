@@ -5,6 +5,7 @@ import { db } from '../../firebase'
 import { ContextMenu } from './ContextMenu/ContextMenu'
 import ContextMenuTrigger from './ContextMenu/ContextMenuTrigger'
 import ContextMenuContent from './ContextMenu/ContextMenuContent'
+import TimeIndicator from './TimeIndicator'
 import type { MessageType } from '@/types/MessageType'
 import { ChatContext } from '@/contexts/ChatContext'
 import { useAuth } from '@/hooks/useAuth'
@@ -28,10 +29,6 @@ export default function Message({ message }: MessageProps) {
   const isUserSender = message.sender === user?.uid
 
   const senderName = isUserSender ? user.displayName : data.user?.displayName
-
-  const date = new Date(message.date.toDate())
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
 
   const handleEdit = (msg: MessageType) => {
     setText(msg.text)
@@ -62,9 +59,10 @@ export default function Message({ message }: MessageProps) {
         >
           <span className="text-sm text-emerald-500">{senderName}</span>
           <p className="py-1">{message.text}</p>
-          <span className="flex justify-end text-sm text-gray-400">
-            {hours}:{minutes}
-          </span>
+          <TimeIndicator
+            time={message.date}
+            className="text-sm text-gray-400"
+          />
         </ContextMenuTrigger>
         <ContextMenuContent>
           {user?.uid === message.sender && (

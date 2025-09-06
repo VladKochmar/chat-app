@@ -43,13 +43,14 @@ export default function ChatsList({ onSelectChat }: ChatsListProps) {
   return (
     <div className="flex-1 overflow-auto">
       {Object.entries(chats)
-        .sort((a, b) => b[1].date - a[1].date)
+        .sort((a, b) => Number(b[1].date) - Number(a[1].date))
         .map((chat) => (
           <div key={chat[0]} onClick={() => handleClick(chat[1].userInfo)}>
             <ChatContact
               currentUserId={user.uid}
               userInfo={chat[1].userInfo}
               lastMessage={chat[1].lastMessage?.text}
+              time={chat[1].date}
               resetUser={resetUser}
             />
           </div>

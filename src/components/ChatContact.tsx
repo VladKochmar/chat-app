@@ -4,6 +4,7 @@ import { ContextMenu } from './ContextMenu/ContextMenu'
 import ContextMenuTrigger from './ContextMenu/ContextMenuTrigger'
 import ContextMenuContent from './ContextMenu/ContextMenuContent'
 import type { User } from '@/types/User'
+import type { Timestamp } from 'firebase/firestore'
 import {
   deleteChat,
   deleteMessagesInChunks,
@@ -14,6 +15,7 @@ interface ChatContactProps {
   currentUserId: string
   userInfo: Omit<User, 'email'>
   lastMessage?: string
+  time: Timestamp
   resetUser: () => void
 }
 
@@ -21,6 +23,7 @@ export default function ChatContact({
   currentUserId,
   userInfo,
   lastMessage,
+  time,
   resetUser,
 }: ChatContactProps) {
   const chatId =
@@ -46,6 +49,7 @@ export default function ChatContact({
           name={userInfo.displayName}
           photoURL={userInfo.photoURL}
           message={lastMessage}
+          time={time}
           className="hover:bg-gray-800"
         />
       </ContextMenuTrigger>
