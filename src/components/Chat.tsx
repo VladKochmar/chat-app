@@ -16,9 +16,9 @@ export default function Chat({ className, onBack }: ChatProps) {
   return (
     <ChatActionsProvider>
       <div className={`flex flex-col bg-gray-800 ${className}`}>
-        <ChatHeader onBack={onBack} />
         {data.chatId ? (
           <>
+            <ChatHeader onBack={onBack} />
             <Messages />
             <ChatActions />
           </>

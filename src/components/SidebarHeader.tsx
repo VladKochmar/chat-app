@@ -9,14 +9,13 @@ import { ChatContext } from '@/contexts/ChatContext'
 export default function SidebarHeader() {
   const router = useRouter()
   const { user, signout } = useAuth()
-  const { data, dispatch } = useContext(ChatContext)
+  const { dispatch } = useContext(ChatContext)
 
   const username = user?.displayName || 'user'
 
   const handleSignout = async () => {
     await signout()
-    dispatch({ type: 'RESET_USER', payload: null })
-    console.log(data)
+    dispatch({ type: 'RESET_USER' })
     await router.invalidate()
   }
 

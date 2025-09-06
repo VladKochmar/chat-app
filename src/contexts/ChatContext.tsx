@@ -10,7 +10,7 @@ interface ChatState {
 
 type ChatAction =
   | { type: 'SELECT_USER'; payload: Omit<User, 'email'> }
-  | { type: 'RESET_USER'; payload: null }
+  | { type: 'RESET_USER' }
 
 interface ChatContextInterface {
   data: ChatState
@@ -45,7 +45,7 @@ export function ChatContextProvider({ children }: { children: ReactNode }) {
       }
       case 'RESET_USER': {
         return {
-          user: action.payload,
+          user: null,
           chatId: null,
         }
       }

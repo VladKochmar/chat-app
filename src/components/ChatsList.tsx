@@ -34,6 +34,10 @@ export default function ChatsList({ onSelectChat }: ChatsListProps) {
     onSelectChat()
   }
 
+  const resetUser = () => {
+    dispatch({ type: 'RESET_USER' })
+  }
+
   if (!user) return null
 
   return (
@@ -46,6 +50,7 @@ export default function ChatsList({ onSelectChat }: ChatsListProps) {
               currentUserId={user.uid}
               userInfo={chat[1].userInfo}
               lastMessage={chat[1].lastMessage?.text}
+              resetUser={resetUser}
             />
           </div>
         ))}

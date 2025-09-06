@@ -14,12 +14,14 @@ interface ChatContactProps {
   currentUserId: string
   userInfo: Omit<User, 'email'>
   lastMessage?: string
+  resetUser: () => void
 }
 
 export default function ChatContact({
   currentUserId,
   userInfo,
   lastMessage,
+  resetUser,
 }: ChatContactProps) {
   const chatId =
     currentUserId > userInfo.uid
@@ -34,6 +36,7 @@ export default function ChatContact({
   const handleDeleteChat = async () => {
     await deleteMessagesInChunks(chatId)
     await deleteChat(currentUserId, userInfo.uid, chatId)
+    resetUser()
   }
 
   return (
