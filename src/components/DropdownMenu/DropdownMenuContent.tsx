@@ -16,7 +16,7 @@ export default function DropdownMenuContent({
     <div
       ref={menuRef}
       onClick={close}
-      className={`absolute top-0 right-0 flex translate-y-1/2 flex-col overflow-hidden rounded-sm border border-gray-200 bg-gray-700 ${className}`}
+      className={`absolute top-0 right-0 z-10 flex translate-y-1/2 flex-col overflow-hidden rounded-sm border border-gray-200 bg-gray-700 ${className}`}
     >
       {children}
     </div>

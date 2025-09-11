@@ -15,7 +15,7 @@ export default function ContextMenuContent({
       ref={menuRef}
       onClick={close}
       style={{ top: position.y, left: position.x }}
-      className="absolute flex w-full max-w-40 flex-col overflow-hidden rounded-sm border border-gray-200 bg-gray-700"
+      className="fixed z-10 flex w-full max-w-40 flex-col overflow-hidden rounded-sm border border-gray-200 bg-gray-700"
     >
       {children}
     </div>
